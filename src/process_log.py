@@ -58,11 +58,21 @@ def most_active_resources(df):
     """
     df_bytes_used = df.query('method != "POST"') \
         .groupby('request_uri') \
-        .agg({'bytes_used':'sum'}) \
-        .nlargest(10, columns = 'bytes_used')
+        .agg({'bytes_used':{'total_bytes': 'sum'}}) \
+        .bytes_used
 
+    # add a column with index values for sorting on multiple columns
+    df_bytes_used['request_uri'] = df_bytes_used.index
+
+    # sort and grab the top 10, breaking ties on request_uri lexicographically
+    df_bytes_used = df_bytes_used.sort_values(['total_bytes','request_uri'], ascending = [False, True]).head(10)
+
+    #write the top 10 hosts to a file
+    output_file = open('../log_output/resources.txt', 'w+')
     for row in df_bytes_used.itertuples():
+        output_file.write('%s\n' %(row.request_uri))
 
+    output_file.close()
 
     return df_bytes_used
 
@@ -75,8 +85,21 @@ def most_active_hosts(df):
     """
     df_hosts = df.groupby('host') \
         .agg({'host': {'host_activity': 'count'}}) \
-        .host \
-        .nlargest(10, columns = 'host_activity') #need to break ties on this
+        .host
+
+    # add a column with index values for sorting on multiple columns
+    df_hosts['host'] = df_hosts.index
+
+    # sort and grab the top 10, breaking ties on host lexicographically
+    df_hosts = df_hosts.sort_values(['host_activity','host'], ascending = [False, True]).head(10)
+
+    #write the top 10 hosts to a file
+    output_file = open('../log_output/hosts.txt', 'w+')
+    for row in df_hosts.itertuples():
+        output_file.write('%s,%d\n' %(row.host, row.host_activity))
+
+    output_file.close()
+
     return df_hosts
 
 @function_timer
@@ -99,7 +122,7 @@ def hour_activity(df):
         )
 
     # now transform these into disjoint intervals.
-    largest_row = df_activity.nlargest(1, 'activity')
+    largest_row = df_activity.nlargest(1, 'activity') # because df is chronological, this will put the first occuring max first
     intervals = [{'time_end': largest_row.index[0], 'activity': largest_row.activity[0], 'timezone': largest_row.timezone[0]}]
 
     for i in range(9):
