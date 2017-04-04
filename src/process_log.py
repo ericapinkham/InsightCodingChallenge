@@ -56,7 +56,7 @@ def most_active_resources(df):
     input:
         pd.DataFrame df - a pandas dataframe containing all the data we want to process
     """
-    df_bytes_used = df.query('method != "POST"') \
+    df_bytes_used = df \
         .groupby('request_uri') \
         .agg({'bytes_used':{'total_bytes': 'sum'}}) \
         .bytes_used
@@ -68,7 +68,7 @@ def most_active_resources(df):
     df_bytes_used = df_bytes_used.sort_values(['total_bytes','request_uri'], ascending = [False, True]).head(10)
 
     #write the top 10 hosts to a file
-    output_file = open('../log_output/resources.txt', 'w+')
+    output_file = open('./log_output/resources.txt', 'w+')
     for row in df_bytes_used.itertuples():
         output_file.write('%s\n' %(row.request_uri))
 
@@ -94,7 +94,7 @@ def most_active_hosts(df):
     df_hosts = df_hosts.sort_values(['host_activity','host'], ascending = [False, True]).head(10)
 
     #write the top 10 hosts to a file
-    output_file = open('../log_output/hosts.txt', 'w+')
+    output_file = open('./log_output/hosts.txt', 'w+')
     for row in df_hosts.itertuples():
         output_file.write('%s,%d\n' %(row.host, row.host_activity))
 
@@ -138,7 +138,7 @@ def hour_activity(df):
             # this should only happen when testing very small data sets
             pass
 
-    output_file = open('../log_output/hours.txt', 'w+')
+    output_file = open('./log_output/hours.txt', 'w+')
     # write these to file
     for e in intervals:
         output_file.write((e['time_end'] - datetime.timedelta(hours = 1)).strftime('%d/%b/%Y:%H:%M:%S') + ' ' \
@@ -162,7 +162,7 @@ class logins():
         self.blocked_hosts = {}
 
         # open the output file
-        self.file = open('../log_output/blocked.txt', 'w+')
+        self.file = open('./log_output/blocked.txt', 'w+')
 
         # process the data
         self.process_logins(df)
@@ -228,7 +228,7 @@ class logins():
         for host in blocked_hosts_expired:
             self.blocked_hosts.pop(host)
 
-file_name = '../log_input/log.txt'
+file_name = './log_input/log.txt'
 # file_name = '/home/eric/insight_coding_challenge/insight_testsuite/log_medium.txt'
 # file_name = '/home/eric/insight_coding_challenge/insight_testsuite/log_smallish.txt'
 # file_name = '/home/eric/insight_coding_challenge/insight_testsuite/log_small.txt'
