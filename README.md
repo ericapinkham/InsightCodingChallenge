@@ -13,11 +13,11 @@ which facilitated several of pandas' built in methods.
 
 ## Dependencies
 process_log.py depends on:
-  pandas    a dataframe package
-  re        a package which provides tools for regex
-  datetime  provides nice datetime datatype
-  codecs    for more flexible encoding options
-  time      for benchmarking
+* pandas: a dataframe package
+* re: a package which provides tools for regex
+* datetime: provides nice datetime datatype
+* codecs: for more flexible encoding options
+* time: for benchmarking
 
 ## Details of Implementation
 In what follows is my general approach and a summary of design decisions made
