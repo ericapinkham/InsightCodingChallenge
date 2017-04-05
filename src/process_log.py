@@ -228,6 +228,7 @@ class logins():
         for host in blocked_hosts_expired:
             self.blocked_hosts.pop(host)
 
+@function_timer
 def daily_active_hosts(df):
     """
     daily_active_hosts: counting the total number of hosts who had a successful
