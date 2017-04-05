@@ -61,16 +61,18 @@ on the site are checked against these dictionaries.
 
 For each entry:
 
-We check if the host is currently blocked, if so we write their failed attempt
+* We check if the host is currently blocked, if so we write their failed attempt
 to file.
 
-If the host is not currently blocked, we check to see if the record was a login.
-If it was a login and it was successful, we clear remove this host from our list
+* If the host is not currently blocked, we check to see if the record was a
+login.
+
+* If it was a login and it was successful, we clear remove this host from our list
 of hosts currently being tracked for failed logins. Otherwise, we append their
 their failed login to a list for that user. Once that user's list reaches 3 in
 length, we add them to a list of blocked hosts along with a timestamp.
 
-Each second, we clear any expired failed login attempts or blocked hosts.
+* Each second, we clear any expired failed login attempts or blocked hosts.
 
 ### Feature 5
 For the heck of it, I included daily active hosts. The number of hosts who
