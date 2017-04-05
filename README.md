@@ -71,3 +71,9 @@ their failed login to a list for that user. Once that user's list reaches 3 in
 length, we add them to a list of blocked hosts along with a timestamp.
 
 Each second, we clear any expired failed login attempts or blocked hosts.
+
+### Feature 5
+For the heck of it, I included daily active hosts. The number of hosts who
+successfully logged in for each day in the input log. While activity and
+and engagement can be tracked in a number of ways, a total number of distinct
+hosts who logged in (successfully) can be an interesting metric.

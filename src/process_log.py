@@ -228,18 +228,55 @@ class logins():
         for host in blocked_hosts_expired:
             self.blocked_hosts.pop(host)
 
-file_name = './log_input/log.txt'
-# file_name = '/home/eric/insight_coding_challenge/insight_testsuite/log_medium.txt'
-# file_name = '/home/eric/insight_coding_challenge/insight_testsuite/log_smallish.txt'
-# file_name = '/home/eric/insight_coding_challenge/insight_testsuite/log_small.txt'
-# file_name = '/home/eric/insight_coding_challenge/insight_testsuite/failed_logins_test.txt'
+def daily_active_hosts(df):
+    """
+    daily_active_hosts: counting the total number of hosts who had a successful
+        login for each day.
+    input:
+        pd.DataFrame df
+    """
+    # first get all successful logins
+    df_dau = df.copy().query('request_uri == "/login" & http_reply_code == "200"')
 
-df = read_file(file_name)
+    # get the date for each timestamp
+    df_dau['date'] = df_dau.index.map(lambda x: x.date())
 
-df_bytes_used = most_active_resources(df)
+    # count the number of users who logged in at least once on a given day
+    df_dau = df_dau.groupby(['host','date']) \
+        .filter(lambda x: len(x) > 0) \
+        .groupby('date') \
+        .sum()
 
-df_hosts = most_active_hosts(df)
+    df_dau.columns = ['daily_active_hosts']
 
-activity_windows = hour_activity(df)
+    # write the output to file
+    output_file = open('./log_output/daily_active_hosts.txt', 'w+')
 
-logins_object = logins(df)
+    for row in df_dau.itertuples():
+        output_file.write('%s,%d\n' %(row[0].strftime('%d/%b/%Y'), row.daily_active_hosts))
+
+    output_file.close()
+
+    return df_dau
+
+if __name__ == '__main__':
+    #name the file
+    file_name = './log_input/log.txt'
+
+    # read the file
+    df = read_file(file_name)
+
+    # feature 1
+    df_hosts = most_active_hosts(df)
+
+    # feature 2
+    df_bytes_used = most_active_resources(df)
+
+    # feature 3
+    activity_windows = hour_activity(df)
+
+    # feature 4
+    logins_object = logins(df)
+
+    # feature 5
+    df_dau = daily_active_hosts(df)
